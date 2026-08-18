@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiAppMinhasCompras.Views.ListaProduto"
+             Title="Lista de Compras">
+
+    <ContentPage.ToolbarItems>
+        <!-- Botão localizado na barra superior para abrir a tela de cadastro de novo item -->
+        <ToolbarItem Text="Novo" Clicked="ToolbarItem_Clicked" />
+    </ContentPage.ToolbarItems>
+
+    <VerticalStackLayout Spacing="10" Padding="20">
+
+        <!-- Campo de busca para filtrar produtos pelo nome -->
+        <SearchBar x:Name="search_bar" 
+                   Placeholder="Pesquisar produto..." 
+                   TextChanged="search_bar_TextChanged" />
+
+        <!-- Lista que exibe os produtos cadastrados no banco de dados SQLite -->
+        <CollectionView x:Name="lst_produtos"
+                        SelectionMode="Single"
+                        SelectionChangedCommand="{Binding SelectionChangedCommand}"
+                        SelectionChanged="lst_produtos_ItemSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="5">
+                        <!-- Exibe o nome do produto -->
+                        <Label Text="{Binding Descricao}" FontSize="18" FontAttributes="Bold" />
+                        <HorizontalStackLayout Spacing="15">
+                            <!-- Exibe a quantidade -->
+                            <Label Text="{Binding Quantidade, StringFormat='Qtd: {0}'}" />
+                            <!-- Exibe o preço unitário formatado em moeda -->
+                            <Label Text="{Binding Preco, StringFormat='Preço: R$ {0:F2}'}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiAppMinhasCompras.Views.EditarProduto"
+             Title="Editar Produto">
+
+    <ContentPage.ToolbarItems>
+        <!-- Botão localizado na barra superior para atualizar os dados alterados -->
+        <ToolbarItem Text="Atualizar" Clicked="ToolbarItem_Clicked" />
+    </ContentPage.ToolbarItems>
+
+    <VerticalStackLayout Spacing="10" Padding="20">
+
+        <!-- Campo para alterar o ID (somente leitura para segurança) -->
+        <Label Text="ID:" />
+        <Entry x:Name="txt_id" IsReadOnly="True" Text="{Binding Id}" />
+
+        <!-- Campo para alterar a descrição do produto -->
+        <Label Text="Descrição do Produto:" />
+        <Entry x:Name="txt_descricao" Text="{Binding Descricao}" />
+
+        <!-- Campo para alterar a quantidade -->
+        <Label Text="Quantidade:" />
+        <Entry x:Name="txt_quantidade" Text="{Binding Quantidade}" Keyboard="Numeric" />
+
+        <!-- Campo para alterar o preço -->
+        <Label Text="Preço:" />
+        <Entry x:Name="txt_preco" Text="{Binding Preco}" Keyboard="Numeric" />
+
+    </VerticalStackLayout>
+</ContentPage>
