@@ -21,9 +21,17 @@ Repositório contínuo desenvolvido para as atividades práticas da disciplina d
 * **Arquivos:** `App.xaml.cs`, `Vistas/NovoProduto.xaml` e `Vistas/NovoProduto.xaml.cs`
 * **Implementação:** Definido o caminho do arquivo de persistência (`banco_sqlite_compras.db3`) no ciclo de vida global da aplicação e desenvolvida a interface gráfica para captação dos dados e efetivação do salvamento do primeiro registro.
 
+### 📌 Agenda 4: Manipulação de Interface e Busca Dinâmica (Etapa Atual)
+
+* **Objetivo:** Implementação de busca dinâmica em tempo real utilizando a memória do aplicativo, sem sobrecarregar o banco de dados.
+* **Arquivos:** `Vistas/ListaProduto.xaml` e `Vistas/ListaProduto.xaml.cs`
+* **Implementação:** Criação da interface com o elemento `SearchBar` e uso do evento `TextChanged` para filtrar dados dinamicamente. Aplicação de `ObservableCollection` e expressões LINQ para realizar as buscas na memória, blindando o código contra falhas de compatibilidade do sistema operacional.
+
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 * C# / XAML
 * .NET MAUI
 * SQLite-net-pcl
+
+---
