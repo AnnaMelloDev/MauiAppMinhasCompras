@@ -27,6 +27,14 @@ Repositório contínuo desenvolvido para as atividades práticas da disciplina d
 * **Arquivos:** `Vistas/ListaProduto.xaml` e `Vistas/ListaProduto.xaml.cs`
 * **Implementação:** Criação da interface com o elemento `SearchBar` e uso do evento `TextChanged` para filtrar dados dinamicamente. Aplicação de `ObservableCollection` e expressões LINQ para realizar as buscas na memória, blindando o código contra falhas de compatibilidade do sistema operacional.
 
+### 📌 Agenda 5: Menus de Contexto, Navegação e Tratamento de Exceções (Etapa Atual)
+
+* **Objetivo:** Aprimorar a interatividade, robustez e confiabilidade do aplicativo móvel com navegação baseada em seleção e ações rápidas.
+* **Arquivos:** `Views/ListaProduto.xaml`, `Views/ListaProduto.xaml.cs`, `Views/EditarProduto.xaml.cs` e `Helpers/SQLiteDatabaseHelper.cs`
+* **Implementação:** 
+  * Estruturação de `ListView` com suporte a `ContextActions` para menus de contexto rápidos (como a exclusão de registros).
+  * Tratamento preventivo de falhas utilizando blocos `try-catch` combinados com `DisplayAlert` para mensagens amigáveis ao usuário.
+  * Configuração do evento `ItemSelected` e do método `EditarProduto` utilizando `BindingContext` para garantir que as alterações sejam salvas no registro correto via SQLite.
 ---
 
 ## 🛠️ Tecnologias Utilizadas
