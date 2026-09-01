@@ -11,31 +11,36 @@
 
     <VerticalStackLayout Spacing="10" Padding="20">
 
-        <!-- Campo de busca para filtrar produtos pelo nome -->
+        <!-- Campo de busca dinâmica -->
         <SearchBar x:Name="search_bar" 
                    Placeholder="Pesquisar produto..." 
                    TextChanged="search_bar_TextChanged" />
 
-        <!-- Lista que exibe os produtos cadastrados no banco de dados SQLite -->
-        <CollectionView x:Name="lst_produtos"
-                        SelectionMode="Single"
-                        SelectionChangedCommand="{Binding SelectionChangedCommand}"
-                        SelectionChanged="lst_produtos_ItemSelected">
-            <CollectionView.ItemTemplate>
+        <!-- ListView exigida na Agenda 5 com suporte a Menu de Contexto (ContextActions) -->
+        <ListView x:Name="lst_produtos" 
+                  ItemSelected="lst_produtos_ItemSelected">
+            <ListView.ItemTemplate>
                 <DataTemplate>
-                    <VerticalStackLayout Padding="5">
-                        <!-- Exibe o nome do produto -->
-                        <Label Text="{Binding Descricao}" FontSize="18" FontAttributes="Bold" />
-                        <HorizontalStackLayout Spacing="15">
-                            <!-- Exibe a quantidade -->
-                            <Label Text="{Binding Quantidade, StringFormat='Qtd: {0}'}" />
-                            <!-- Exibe o preço unitário formatado em moeda -->
-                            <Label Text="{Binding Preco, StringFormat='Preço: R$ {0:F2}'}" />
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
+                    <ViewCell>
+                        <!-- Menu de contexto rápido (Aparece ao segurar ou arrastar o item na lista) -->
+                        <ViewCell.ContextActions>
+                            <MenuItem Text="Excluir" 
+                                      Clicked="MenuItem_Clicked" 
+                                      IsDestructive="True" />
+                        </ViewCell.ContextActions>
+
+                        <!-- Layout visual de cada linha do produto -->
+                        <VerticalStackLayout Padding="10" Spacing="5">
+                            <Label Text="{Binding Descricao}" FontSize="18" FontAttributes="Bold" />
+                            <HorizontalStackLayout Spacing="15">
+                                <Label Text="{Binding Quantidade, StringFormat='Qtd: {0}'}" />
+                                <Label Text="{Binding Preco, StringFormat='Preço: R$ {0:F2}'}" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </ViewCell>
                 </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            </ListView.ItemTemplate>
+        </ListView>
 
     </VerticalStackLayout>
 </ContentPage>

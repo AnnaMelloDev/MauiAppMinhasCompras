@@ -8,7 +8,7 @@ namespace MauiAppMinhasCompras.Helpers
       // Criado o cabo de conexão seguro e de leitura única que trabalha em segundo plano.
       readonly SQLiteAsyncConnection _conn;
 
-      // Criado o construtor que é acionado na partida, liga o endereço do banco e cria a tabela do carrinho aguardando a finalização.
+      // Criado o construtor que é acionado na partida, liga o endereço do banco e cria a tabela aguardando a finalização.
       public SQLiteDatabaseHelper(string path)
       {
          _conn = new SQLiteAsyncConnection(path);
@@ -40,10 +40,10 @@ namespace MauiAppMinhasCompras.Helpers
          return _conn.Table<Produto>().ToListAsync();
       }
 
-      // Criada a função de busca que filtra a lista de produtos procurando partes de uma palavra informada.
+      // Criada a função de busca corrigida (adicionado o 'FROM' que faltava na instrução SQL)
       public Task<List<Produto>> Search(string q)
       {
-         string sql = "SELECT * Produto WHERE descricao LIKE '%" + q + "%'";
+         string sql = "SELECT * FROM Produto WHERE Descricao LIKE '%" + q + "%'";
          return _conn.QueryAsync<Produto>(sql);
       }
    }

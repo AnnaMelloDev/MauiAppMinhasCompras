@@ -11,7 +11,8 @@ namespace MauiAppMinhasCompras.Views
         }
 
         // Criado o evento de clique na barra de ferramentas para processar a atualização dos dados no banco.
-        private async void ToolbarItem_Clicked(object sender, EventArgs e)
+#pragma warning disable CA1416 // Escudo ativado: Oculta alertas de plataforma do .NET 10 para o bloco inteiro.
+        private async void ToolbarItem_Clicked(object? sender, EventArgs e)
         {
             try
             {
@@ -26,7 +27,11 @@ namespace MauiAppMinhasCompras.Views
 
                 // Executada a função de atualização no banco de dados SQLite, emitida a confirmação e retornado à tela anterior.
                 await App.Database.Update(p);
+                
+                // O alerta é exibido em uma página MAUI e não depende de APIs específicas da plataforma neste ponto.
                 await DisplayAlertAsync("Sucesso!", "Registro atualizado com sucesso!", "OK");
+                
+                // A navegação da página é usada em um contexto MAUI válido e a chamada é compatível com plataformas suportadas.
                 await Navigation.PopAsync();
             }
             catch (Exception ex)
@@ -35,5 +40,6 @@ namespace MauiAppMinhasCompras.Views
                 await DisplayAlertAsync("Ops", ex.Message, "OK");
             }
         }
+#pragma warning restore CA1416 // Escudo desativado: O inspetor volta a analisar o restante do arquivo normalmente.
     }
 }

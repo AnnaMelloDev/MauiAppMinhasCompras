@@ -1,103 +1,160 @@
-using MauiAppMinhasCompras.Models;
 using System.Collections.ObjectModel;
+using MauiAppMinhasCompras.Models;
 
-namespace MauiAppMinhasCompras.Views
+namespace MauiAppMinhasCompras.Views;
+
+public partial class ListaProduto : ContentPage
 {
-    public partial class ListaProduto : ContentPage
+    // Variável global que mantém a lista original de produtos na memória
+    ObservableCollection<Produto> _todosOsProdutos = new ObservableCollection<Produto>();
+
+    // Criado o construtor que inicializa os componentes da tela de listagem.
+    public ListaProduto()
     {
-        // Criado o construtor que inicializa os componentes da tela de listagem.
-        public ListaProduto()
+        InitializeComponent();
+    }
+
+#pragma warning disable CA1416 // Escudo protetor para compatibilidade de plataforma no Windows
+    // Criado o evento executado sempre que a tela aparece em foco para atualizar os dados do banco.
+    protected async override void OnAppearing()
+    {
+        base.OnAppearing();
+        try
         {
-            InitializeComponent();
+            // Buscado todos os registros gravados no banco.
+            List<Produto> produtos = await App.Database.GetAll();
+            
+            // Convertidos em ObservableCollection para notificar automaticamente a interface do usuário.
+            _todosOsProdutos = new ObservableCollection<Produto>(produtos);
+            AtualizarLista(_todosOsProdutos);
         }
-
-        // Criado o evento executado sempre que a tela aparece em foco para atualizar os dados do banco.
-        protected async override void OnAppearing()
+        catch (Exception ex)
         {
-            base.OnAppearing();
-            try
-            {
-                // Buscado todos os registros gravados no banco e convertidos em lista para o CollectionView.
-                List<Produto> produtos = await App.Database.GetAll();
-                lst_produtos.ItemsSource = produtos;
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlertAsync("Ops", ex.Message, "OK");
-            }
+            await DisplayAlertAsync("Ops", ex.Message, "OK");
         }
+    }
 
-        // Criado o evento do botão Novo para redirecionar o usuário para a tela de cadastro.
-        private async void ToolbarItem_Clicked(object sender, EventArgs e)
+    // Criado o evento do botão Novo para redirecionar o usuário para a tela de cadastro.
+    private async void ToolbarItem_Clicked(object? sender, EventArgs e)
+    {
+        try
         {
-            try
-            {
-                await Navigation.PushAsync(new NovoProduto());
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlertAsync("Ops", ex.Message, "OK");
-            }
+            await Navigation.PushAsync(new NovoProduto());
         }
-
-        // Criado o evento de seleção de um item do CollectionView para abrir a tela de edição ou exclusão.
-        private async void lst_produtos_ItemSelected(object sender, SelectionChangedEventArgs e)
+        catch (Exception ex)
         {
-            try
+            await DisplayAlertAsync("Ops", ex.Message, "OK");
+        }
+    }
+
+    // Criado o evento de seleção de um item da ListView (Agenda 5)
+    private async void lst_produtos_ItemSelected(object? sender, SelectedItemChangedEventArgs e)
+    {
+        try
+        {
+            // Captura o produto selecionado na ListView
+            Produto? p = e.SelectedItem as Produto;
+            if (p == null) return;
+
+            // Exibida uma caixa de opções para o usuário escolher entre Editar ou Excluir.
+            string opcao = await DisplayActionSheetAsync("Ação:", "Cancelar", null, "Editar", "Excluir");
+
+            if (opcao == "Editar")
             {
-                // Captura o produto selecionado na lista moderna
-                Produto? p = e.CurrentSelection.FirstOrDefault() as Produto;
-                if (p == null) return;
-
-                /* COMENTADO TEMPORARIAMENTE PARA A AGENDA 3:
-           O bloco abaixo exibia o menu de Editar e Excluir. 
-           Como a Agenda 3 foca apenas na inserção, isolamos esta função.
-                // Exibida uma caixa de opções para o usuário escolher entre Editar ou Excluir o item selecionado.
-                string opcao = await DisplayActionSheetAsync("Ação:", "Cancelar", null, "Editar", "Excluir");
-
-                if (opcao == "Editar")
+                // Direcionado para a tela de edição passando o produto selecionado via BindingContext.
+                await Navigation.PushAsync(new EditarProduto
                 {
-                    // Direcionado para a tela de edição passando o produto selecionado.
-                    await Navigation.PushAsync(new EditarProduto
-                    {
-                        BindingContext = p
-                    });
-                }
-                else if (opcao == "Excluir")
-                {
-                    // Confirmada a exclusão e removido o registro do banco de dados pelo ID.
-                    bool confirmar = await DisplayAlertAsync("Confirmação", "Deseja realmente excluir este produto?", "Sim", "Não");
-                    if (confirmar)
-                    {
-                        await App.Database.Delete(p.Id);
-                        // Atualizada a lista exibida na tela.
-                        lst_produtos.ItemsSource = await App.Database.GetAll();
-                    }
-                }
-                */
-                
-                // Limpa a seleção para permitir re-cliques no mesmo item
-                ((CollectionView)sender).SelectedItems.Clear();
+                    BindingContext = p
+                });
             }
-            catch (Exception ex)
+            else if (opcao == "Excluir")
             {
-                await DisplayAlertAsync("Ops", ex.Message, "OK");
+                // Confirmada a exclusão e removido o registro do banco de dados pelo ID.
+                bool confirmar = await DisplayAlertAsync("Confirmação", "Deseja realmente excluir este produto?", "Sim", "Não");
+                if (confirmar)
+                {
+                    await App.Database.Delete(p.Id);
+                    
+                    // Atualizada a lista exibida na tela requisitando o banco novamente.
+                    List<Produto> produtos = await App.Database.GetAll();
+                    _todosOsProdutos = new ObservableCollection<Produto>(produtos);
+                    AtualizarLista(_todosOsProdutos);
+                }
+            }
+            
+            // Limpa a seleção para permitir re-cliques no mesmo item
+            if (sender is ListView lv)
+            {
+                lv.SelectedItem = null;
             }
         }
-
-        // Criado o evento de alteração de texto na barra de busca para filtrar os produtos em tempo real.
-        private async void search_bar_TextChanged(object sender, TextChangedEventArgs e)
+        catch (Exception ex)
         {
-            try
+            await DisplayAlertAsync("Ops", ex.Message, "OK");
+        }
+    }
+
+    // Evento acionado ao clicar no Menu de Contexto (ContextActions - Excluir rápido) exigido na Agenda 5
+    private async void MenuItem_Clicked(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (sender is MenuItem menuItem && menuItem.BindingContext is Produto p)
             {
-                string q = e.NewTextValue;
-                List<Produto> produtos = await App.Database.Search(q);
-                lst_produtos.ItemsSource = produtos;
+                bool confirmar = await DisplayAlertAsync("Confirmação", $"Deseja realmente excluir '{p.Descricao}'?", "Sim", "Não");
+                if (confirmar)
+                {
+                    await App.Database.Delete(p.Id);
+                    
+                    // Atualiza a lista após a exclusão via menu rápido
+                    List<Produto> produtos = await App.Database.GetAll();
+                    _todosOsProdutos = new ObservableCollection<Produto>(produtos);
+                    AtualizarLista(_todosOsProdutos);
+                }
             }
-            catch (Exception ex)
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync("Ops", ex.Message, "OK");
+        }
+    }
+#pragma warning restore CA1416
+
+    // Método centralizado para atualizar a lista garantindo compatibilidade com o Windows
+    private void AtualizarLista(IEnumerable<Produto> produtos)
+    {
+        if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 17763))
+        {
+            lst_produtos.ItemsSource = new ObservableCollection<Produto>(produtos);
+        }
+    }
+
+    // Evento acionado quando o texto na SearchBar muda, realizando a pesquisa dinâmica
+    private void search_bar_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        try
+        {
+            string q = string.Empty;
+            if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 17763))
             {
-                await DisplayAlertAsync("Ops", ex.Message, "OK");
+                q = e.NewTextValue?.ToLower() ?? string.Empty;
             }
+
+            // Verifica se a barra de pesquisa foi completamente limpa
+            if (string.IsNullOrWhiteSpace(q))
+            {
+                AtualizarLista(_todosOsProdutos);
+            }
+            else
+            {
+                // Filtra os dados localizando a palavra e protege contra produtos nulos
+                var filtrados = _todosOsProdutos.Where(p => p.Descricao?.ToLower().Contains(q) ?? false);
+                AtualizarLista(filtrados);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
     }
 }
